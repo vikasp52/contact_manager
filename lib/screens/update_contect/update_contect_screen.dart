@@ -10,11 +10,10 @@ import 'package:intl/intl.dart';
 import 'bloc/update_contact_bloc.dart';
 
 class UpdateContactScreen extends StatefulWidget {
-
   final ContactModel contactModel;
 
   const UpdateContactScreen({Key key, this.contactModel}) : super(key: key);
-  
+
   @override
   _UpdateContactScreenState createState() => _UpdateContactScreenState();
 }
@@ -22,6 +21,7 @@ class UpdateContactScreen extends StatefulWidget {
 class _UpdateContactScreenState extends State<UpdateContactScreen> {
   TextEditingController _controllerName = TextEditingController();
   TextEditingController _controllerMobNo = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -39,10 +39,8 @@ class _UpdateContactScreenState extends State<UpdateContactScreen> {
     updateContactBloc.mobNoSink(_controllerMobNo.text);
   }
 
-
   @override
   Widget build(BuildContext context) {
-    
     DateTime selectedDate = DateTime.now();
 
     Future<Null> _selectDate(BuildContext context) async {
@@ -95,16 +93,16 @@ class _UpdateContactScreenState extends State<UpdateContactScreen> {
                                 : snapshotImageFile.hasData ? NetworkImage(snapshotImageFile.data) : null,
                             child: !snapshotImageFile.hasData && !snapshotImageFile.hasData
                                 ? const Icon(
-                              Icons.person,
-                              color: Colors.white,
-                            )
+                                    Icons.person,
+                                    color: Colors.white,
+                                  )
                                 : SizedBox()),
                       ),
                       Positioned(
                         left: 5.0,
                         child: Container(
-                          decoration: ShapeDecoration(
-                              shape: CircleBorder(side: BorderSide(color: Colors.white, width: 1.0))),
+                          decoration:
+                              ShapeDecoration(shape: CircleBorder(side: BorderSide(color: Colors.white, width: 1.0))),
                           child: CircleAvatar(
                             radius: 15.0,
                             backgroundColor: Colors.black,
@@ -156,7 +154,6 @@ class _UpdateContactScreenState extends State<UpdateContactScreen> {
                   label: 'Mobile No',
                   keyboardType: TextInputType.number,
                   controller: _controllerMobNo,
-
                 ),
               ],
             ),
@@ -165,26 +162,27 @@ class _UpdateContactScreenState extends State<UpdateContactScreen> {
       );
     }
 
-
     Widget updateButton() {
       return Padding(
         padding: EdgeInsets.all(20),
         child: StreamBuilder<bool>(
-          initialData: true,
+            initialData: true,
             stream: updateContactBloc.submitCheck,
             builder: (context, snapshot) {
               return RaisedButton(
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                onPressed: !snapshot.data?null:() {
-                  addDataToSink();
-                  updateContactBloc.updateContactData(contactId: widget.contactModel.contactId);
-                  Navigator.of(context).pop();
+                onPressed: () {
+                  if (_formKey.currentState.validate()) {
+                    addDataToSink();
+                    updateContactBloc.updateContactData(contactId: widget.contactModel.contactId);
+                    Navigator.of(context).pop();
+                  }
                 },
                 padding: EdgeInsets.only(
                   top: 20,
                   bottom: 20,
                 ),
-                color: !snapshot.data?Colors.grey:Colors.black,
+                color: !snapshot.data ? Colors.grey : Colors.black,
                 child: Text(
                   "Update",
                   style: TextStyle(
@@ -193,17 +191,19 @@ class _UpdateContactScreenState extends State<UpdateContactScreen> {
                   ),
                 ),
               );
-            }
-        ),
+            }),
       );
     }
 
     return CommonBodyStructure(
       text: 'Update Contact',
       child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[header(), buildContactForm(), updateButton()],
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[header(), buildContactForm(), updateButton()],
+          ),
         ),
       ),
     );

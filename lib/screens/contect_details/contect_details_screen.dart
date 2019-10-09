@@ -31,12 +31,12 @@ class _ContactDetailScreenState extends State<ContactDetailScreen> {
                     height: 90.0,
                   ),
                   Text(
-                  widget.contactModel.name,
+                  widget.contactModel.name??'',
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.black, fontSize: 20.0, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                      widget.contactModel.dob,
+                      widget.contactModel.dob??'',
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.grey, fontSize: 15.0, fontWeight: FontWeight.bold),
                   ),
